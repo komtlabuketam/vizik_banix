@@ -1,0 +1,1 @@
+{"id": 15, "contentVariable": "", "contentFunction": "", "contentTransition": "mediump vec4 transit = texture2D(iChannel1, uv);\n        if (transit.b < translatePercent) {\n            background = texture2D(iChannel3, uv).rgb;\n        } else {\n            background = texture2D(iChannel1, uv).rgb;\n        }"}

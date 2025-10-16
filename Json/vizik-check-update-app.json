@@ -1,0 +1,18 @@
+{
+  "data": {
+    "app_info": [
+      {
+        "what_news": "- Bugs Fixed",
+        "force_update": "true",
+        "package_name": "com.banix.music.visualizer.maker",
+        "version_code": 51,
+        "version_name": "6.0",
+        "new_package_name": "com.banix.music.visualizer.maker"
+      }
+    ]
+  },
+  "meta": {
+    "message": null,
+    "success": 1
+  }
+}

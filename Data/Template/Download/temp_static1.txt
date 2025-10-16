@@ -1,0 +1,23 @@
+{
+  "audioUrl": "Music/Audio/Mood/cinematic-fairy-tale-story-main-8697.mp3",
+  "audioFileName": "cinematic-fairy-tale-story-main-8697.mp3",
+  "thumbUrl": "",
+  "thumbFileName": "",
+  "visualizerSource": {
+    "contentVariable": "",
+    "contentFunction": "",
+    "contentVisualizer": "uv = ( gl_FragCoord.xy / iResolution.xy );\n    uv.y -= 0.5;\n    mediump vec3 color = vec3(0.0);\n    mediump float levels = texture2D(iChannel0, vec2(uv.x, 1.)).x * .5 + 0.2;\n    const mediump float k = 5.;\n    for( mediump float i = 1.0; i < k; ++i ){\n        mediump float t = iTime * exp(0.1*0./1000.0) * (1.0);\n        uv.y += exp(6.0*levels) * sin( uv.x*exp(i) - t) * 0.01;\n        mediump float fTemp = abs(1.0/(50.0*k) / uv.y);\n        color += vec3( fTemp*(i*0.03), fTemp*i/k, pow(fTemp,0.93)*1.2 );\n    }\n\n    mediump vec4 color_final = vec4(color, 65.0);\n    visualizer = color_final.rgb;"
+  },
+  "particleSource": {
+    "contentVariable": "",
+    "contentFunction": "mediump float vDrop(mediump vec2 uv,mediump float t){\n    uv.x = uv.x*300.0;\t\t\t\t\t\t\n    mediump float dx = fract(uv.x);\n    uv.x = floor(uv.x);\n    uv.y *= 0.05;\t\t\t\t\t\t\t\n    mediump float o=sin(uv.x);\t\t\t\t\n    mediump float s=cos(uv.x*33.1)*.3 +.7;\t\t\t\n    mediump float trail = mix(255.0,255.0,s);\t\t\t\n    mediump float yv = fract(uv.y + t*s + o) * trail;\n    yv = 1.0/yv;\n    yv = smoothstep(0.0,1.0,yv*yv);\n    yv = sin(yv*PI)*(s*5.0);\n    mediump float d2 = sin(dx*PI);\n    return yv*(d2*d2);\n}",
+    "contentParticle": "uv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;\n    mediump float d = length(uv)+0.05;\n    uv = vec2(atan(uv.x, uv.y) / PI, 2.5 / d);\n    uv.y *= 0.5;\n    mediump float t =  iTime * 0.05;\n    particle = vec3(0.99,0.99,0.99) * vDrop(uv,t);\n    particle = particle *(d*d);"
+  },
+  "transitionSource": {
+    "contentVariable": "const mediump vec4 black = vec4(0.0, 0.0, 0.0, 1.0);\nconst mediump vec2 boundMin = vec2(0.0, 0.0);\nconst mediump vec2 boundMax = vec2(1.0, 1.0);",
+    "contentFunction": "mediump float rand(mediump vec2 co) {\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nbool inBounds (mediump vec2 p) {\n    return all(lessThan(boundMin, p)) && all(lessThan(p, boundMax));\n}\n\nmediump vec2 project (mediump vec2 p) {\n    return p * vec2(1.0, -1.2) + vec2(0.0, -0.02);\n}\n\nmediump vec4 bgColor (mediump vec2 p, mediump vec2 pto, mediump float reflection) {\n    mediump vec4 c = black;\n    pto = project(pto);\n    if (inBounds(pto)) {\n        c += mix(black, texture2D(iChannel3, p), reflection * mix(1.0, 0.0, pto.y));\n    }\n    return c;\n}",
+    "contentTransition": "mediump float reflection = 0.4;\n        mediump float perspective = 0.4;\n        mediump float depth = 3.;\n        mediump float progress = translatePercent;\n        mediump vec2 p = vec2(gl_FragCoord.x / iResolution.x, 1.0 - gl_FragCoord.y / iResolution.y);\n        mediump vec2 pfr = vec2(-1.), pto = vec2(-1.);\n        mediump float middleSlit = 2.0 * abs(p.x-0.5) - progress;\n        if (middleSlit > 0.0) {\n            pfr = p + (p.x > 0.5 ? -1.0 : 1.0) * vec2(0.5*progress, 0.0);\n            mediump float d = 1.0/(1.0+perspective*progress*(1.0-middleSlit));\n            pfr.y -= d/2.;\n            pfr.y *= d;\n            pfr.y += d/2.;\n        }\n        mediump float size = mix(1.0, depth, 1.-progress);\n        pto = (p + vec2(-0.5, -0.5)) * vec2(size, size) + vec2(0.5, 0.5);\n        if (inBounds(pfr)) {\n            background = texture2D(iChannel1, pfr).rgb;\n        } else if (inBounds(pto)) {\n            background = texture2D(iChannel3, pto).rgb;\n        } else {\n            background = bgColor(p, pto, reflection).rgb;\n        }"
+  },
+  "backgroundEffectId": 1,
+  "thumbEffectId": 1
+}

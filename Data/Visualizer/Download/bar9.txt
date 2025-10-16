@@ -1,0 +1,1 @@
+{"id": 9,"style": "Bar","contentVariable": "","contentFunction": "","contentVisualizer": "uv = gl_FragCoord.xy / iResolution.xy;\n    mediump float v = texture2D(iChannel0, vec2(uv.x, 0.)).x;\n    if (uv.y > v) {\n        visualizer = vec3(0.);\n    } else {\n        visualizer = vec3(0., v, v);\n    }"}

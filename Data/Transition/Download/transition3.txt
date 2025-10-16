@@ -1,0 +1,1 @@
+{"id": 3, "contentVariable": "", "contentFunction": "", "contentTransition": "mediump float progress = translatePercent;\n        mediump vec3 tex0 = texture2D(iChannel1, uv).xyz;\n        mediump vec3 tex1 = texture2D(iChannel3, uv).xyz;\n        background = mix(tex0, tex1, progress);"}

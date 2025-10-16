@@ -1,0 +1,23 @@
+{
+  "audioUrl": "Music/Audio/Electronic/into-the-night-20928.mp3",
+  "audioFileName": "into-the-night-20928.mp3",
+  "thumbUrl": "",
+  "thumbFileName": "",
+  "visualizerSource": {
+    "contentVariable": "",
+    "contentFunction": "",
+    "contentVisualizer": "mediump float WAVES = 8.0;\n    uv = -1.0 + 2.0 * fragCoord.xy;\n    mediump float time = iTime * 1.0;\n    for (mediump float i=0.0; i<WAVES + 1.0; i++) {\n        mediump float freq = texture2D(iChannel0, vec2(i / WAVES, 0.0)).x * 7.0;\n        mediump vec2 p = vec2(uv);\n        p.x += i * 0.04 + freq * 0.03;\n        p.y += sin(p.x * 10.0 + time) * cos(p.x * 2.0) * freq * 0.2 * ((i + 1.0) / WAVES);\n        mediump float intensity = abs(0.01 / p.y) * clamp(freq, 0.35, 2.0);\n        visualizer += vec3(1.0 * intensity * (i / 5.0), 0.5 * intensity, 1.75 * intensity) * (3.0 / WAVES);\n    }"
+  },
+  "particleSource": {
+    "contentVariable": "#define\tTAU 6.28318",
+    "contentFunction": "",
+    "contentParticle": "uv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;\n    mediump vec3 col = vec3(0.99,0.99,0.99);\n    uv.x = uv.x*400.0;\n    mediump float dx = fract(uv.x);\n    uv.x = floor(uv.x);\n    mediump float t =  iTime*0.2;\n    uv.y *= 0.95;\n    mediump float o=sin(uv.x*215.4);\n    mediump float s=cos(uv.x*33.1)*.3 +.7;\n    mediump float trail = mix(225.0,225.0,s);\n    mediump float yv = fract(uv.y + t*s + o) * trail;\n    yv = 1.0/yv;\n    yv = smoothstep(0.0,1.0,yv*yv);\n    yv = sin(yv*PI)*(s*5.0);\n    mediump float d2 = sin(dx*PI);\n    yv *= d2*d2;\n    particle = col*yv;"
+  },
+  "transitionSource": {
+    "contentVariable": "",
+    "contentFunction": "",
+    "contentTransition": "mediump float progress = translatePercent;\n        if (progress > 0.95){\n            progress = 0.95;\n        }\n        mediump float t1 = mod(progress,1.5);\n        t1 = clamp(t1,0.0,1.0);\n        mediump float nt = fract(t1);\n        mediump float eRad = 1.5 * nt;\n        mediump float eAng = (2. * 3.14159) * (nt*4.5);\n        mediump vec2 centre = vec2(.5,.5);\n        uv -= centre;\n        mediump float len = length(uv * vec2(iResolution.x / iResolution.y, 1.));\n        mediump float ang = atan(uv.y, uv.x) + eAng * smoothstep(eRad, 0., len);\n        mediump float rad = length(uv);\n        mediump vec3 col1 = texture2D(iChannel1, vec2(rad * cos(ang), rad * sin(ang)) + centre ).xyz;\n        mediump float nt2 = (len*2.0) - (nt*2.0);\n        nt2 = mix(1.0,nt2-nt,nt);\n        nt2 = clamp(nt2,0.0,1.0);\n        mediump vec3 col2 = texture2D(iChannel3,uv+ centre).xyz;\n\n        col1 = mix(col2,col1,nt2);\n        background = col1;"
+  },
+  "backgroundEffectId": 1,
+  "thumbEffectId": 1
+}

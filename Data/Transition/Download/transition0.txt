@@ -1,0 +1,1 @@
+{"id":0,"contentVariable":"","contentFunction":"","contentTransition":"mediump float progress = translatePercent;if (progress < 0.5){background = get2DTexture(iChannel1, uv);} else {background = get2DTexture(iChannel3, uv);}"}

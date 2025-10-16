@@ -1,0 +1,23 @@
+{
+  "audioUrl": "Music/Audio/Rock/survival-metal-with-solo-109315.mp3",
+  "audioFileName": "survival-metal-with-solo-109315.mp3",
+  "thumbUrl": "Thumb/Download/thumb_21.png",
+  "thumbFileName": "thumb_21.png",
+  "visualizerSource": {
+    "contentVariable": "#define FREQ_STEP 0.001953125\n#define TWO_PI 6.283185",
+    "contentFunction": "highp float getAvgVolume(highp float v, highp int steps){\n    highp float sum = 0.0;\n    highp float x = 0.0;\n    for (highp int i = 0; i < steps; i++){\n        x = fract(v + float(i) * FREQ_STEP);\n        sum += texture2D(iChannel0, vec2(pow(x, 2.1), 0.0)).r * pow(x, 0.08);\n    }\n    return sum /= float(steps);\n}",
+    "contentVisualizer": "highp vec2 res = iResolution.xy;\n    uv = (2.0 * gl_FragCoord.xy - res) * 0.6 / min(res.x, res.y);\n    uv.x = abs(uv.x);\n    uv.y *= -1.0;\n    highp float ps = 1.0 / min(res.x, res.y);\n    highp float avgVolume = getAvgVolume(0.3, 1);\n    //Volume pulse\n    uv *= 1.0 - smoothstep(0.3, 1.1, avgVolume) * 0.7;\n    //Polar coordinates, x - length, y - frequency\n    highp vec2 polarUV = vec2(length(uv), atan(uv.y, uv.x) / TWO_PI);\n    polarUV.y = fract((polarUV.y + 0.2) * 0.8);\n    highp float volume = getAvgVolume(polarUV.y, 20);\n    volume = pow(smoothstep(0.0, 0.9, volume), 4.0 / (avgVolume)) * 0.4; //Adjusting freq volume\n    highp float distToFreq = (volume - polarUV.x + 0.2);\n    highp float distToFreq2 = (volume - polarUV.x + 0.15);\n    //line\n//    visualizer += vec3(0.0, 0.0, 0.0)* smoothstep(1.0 - ps * 1.5, 1.0, 1.0 - abs(distToFreq))* smoothstep(-1.0, 1.0, avgVolume);\n//    visualizer += vec3(0.0, 0.90, 0.2)* smoothstep(1.0 - ps * 2.5, 1.0, 1.0 - abs(distToFreq2))* smoothstep(-1.0, 1.0, avgVolume);\n    //a la blured line\n    visualizer += vec3(1.0, 0.671, 0.176)* smoothstep(1.0 - 0.008 * pow(avgVolume * 3.0 + 1.0, 2.0), 1.0, 1.0 - abs(distToFreq));\n//    visualizer += vec3(0.102, 1.0, 0.059)* smoothstep(1.0 - 0.022 * pow(avgVolume * 3.0 + 1.0, 2.0), 1.0, 1.0 - abs(distToFreq2));\n    //flash\n    visualizer += vec3(1.0, 1.0, 1.0)* pow(avgVolume, 8.0)* (1.0 - polarUV.x);\n    //Center fill\n    visualizer += vec3(1.0, 1.0, 1.0)* smoothstep(0.0, 0.01, distToFreq);\n    //    visualizer += vec3(0.15, 0.15, 0.11)* smoothstep(0.0, 0.16, distToFreq);\n    //Center circles\n    visualizer += vec3(1.0, 1.0, 1.0)* smoothstep(0.1, 0.3, distToFreq)* smoothstep(0.1, 0.8, pow(avgVolume, 2.0));"
+  },
+  "particleSource": {
+    "contentVariable": "",
+    "contentFunction": "mediump float vDrop(mediump vec2 uv,mediump float t){\n    uv.x = uv.x*300.0;\t\t\t\t\t\t\n    mediump float dx = fract(uv.x);\n    uv.x = floor(uv.x);\n    uv.y *= 0.05;\t\t\t\t\t\t\t\n    mediump float o=sin(uv.x);\t\t\t\t\n    mediump float s=cos(uv.x*33.1)*.3 +.7;\t\t\t\n    mediump float trail = mix(255.0,255.0,s);\t\t\t\n    mediump float yv = fract(uv.y + t*s + o) * trail;\n    yv = 1.0/yv;\n    yv = smoothstep(0.0,1.0,yv*yv);\n    yv = sin(yv*PI)*(s*5.0);\n    mediump float d2 = sin(dx*PI);\n    return yv*(d2*d2);\n}",
+    "contentParticle": "uv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;\n    mediump float d = length(uv)+0.05;\n    uv = vec2(atan(uv.x, uv.y) / PI, 2.5 / d);\n    uv.y *= 0.5;\n    mediump float t =  iTime * 0.05;\n    particle = vec3(0.99,0.99,0.99) * vDrop(uv,t);\n    particle = particle *(d*d);"
+  },
+  "transitionSource": {
+    "contentVariable": "mediump float freq = 4.0;\nmediump float period = 8.0;\nmediump float speed = 2.0;\nmediump float fade = 4.0;\nmediump float displacement = 0.2;",
+    "contentFunction": "",
+    "contentTransition": "mediump vec2 U = ((2. * gl_FragCoord.xy) - iResolution.xy) / min(iResolution.x, iResolution.y);\n        mediump float D = length(U);\n        mediump float progress = 3.1 * translatePercent;\n        mediump float frame_time = mod(progress * speed, period);\n        mediump float pixel_time = max(0.0, frame_time - D);\n        mediump float wave_height = (cos(pixel_time * freq) + 1.0) / 2.0;\n        mediump float wave_scale = (1.0 - min(1.0, pixel_time / fade));\n        mediump float frac = wave_height * wave_scale;\n        if (mod(progress * speed, period * 2.0) > period){\n            frac = 1. - frac;\n        }\n        mediump vec2 tc = uv + ((U / D) * -((sin(pixel_time * freq) / fade) * wave_scale) * displacement);\n        background = mix(texture2D(iChannel3, tc), texture2D(iChannel1, tc), frac).rgb;"
+  },
+  "backgroundEffectId": 1,
+  "thumbEffectId":1
+}

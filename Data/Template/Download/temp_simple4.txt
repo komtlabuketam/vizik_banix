@@ -1,0 +1,23 @@
+{
+  "audioUrl": "Music/Audio/Rock/start-the-engine-21180.mp3",
+  "audioFileName": "start-the-engine-21180.mp3",
+  "thumbUrl": "Thumb/Download/thumb_3.png",
+  "thumbFileName": "thumb_3.png",
+  "visualizerSource": {
+    "contentVariable": "",
+    "contentFunction": "",
+    "contentVisualizer": ""
+  },
+  "particleSource": {
+    "contentVariable": "",
+    "contentFunction": "",
+    "contentParticle": ""
+  },
+  "transitionSource": {
+    "contentVariable": "",
+    "contentFunction": "mediump vec3 TextureSource(mediump vec2 uv){\n    return texture2D(iChannel1, uv).rgb;\n}\n\nmediump vec3 TextureTarget(mediump vec2 uv){\n    return texture2D(iChannel3, uv).rgb;\n}\n\n\nmediump float burnHash(mediump vec2 p){\n    mediump vec3 p2 = vec3(p.xy, 1.0);\n    return fract(sin(dot(p2, vec3(37.1, 61.7, 12.4)))*3758.5453123);\n}\n\nmediump float noise(in mediump vec2 p){\n    mediump vec2 i = floor(p);\n    mediump vec2 f = fract(p);\n    f *= f * (3.0-2.0*f);\n\n    return mix(mix(burnHash(i + vec2(0., 0.)), burnHash(i + vec2(1., 0.)), f.x),\n    mix(burnHash(i + vec2(0., 1.)), burnHash(i + vec2(1., 1.)), f.x),\n    f.y);\n}\n\nmediump float fbm(mediump vec2 p){\n    mediump float v = 0.0;\n    v += noise(p*1.)*.5;\n    v += noise(p*2.)*.25;\n    v += noise(p*4.)*.125;\n    return v;\n}",
+    "contentTransition": "mediump vec3 src = TextureSource(uv);\n        mediump vec3 tgt = TextureTarget(uv);\n        mediump vec3 col = src;\n        uv.x -= 1.5;\n        mediump float ctime = 3.1 * 0.7 * translatePercent;\n        // burn\n        mediump float d = uv.x+uv.y*0.5 + 0.5*fbm(uv*15.1) + ctime;\n        if (d >0.35) {\n            col = clamp(col-(d-0.35)*10., 0.0, 1.0);\n        }\n        if (d >0.47) {\n            if (d < 0.5) {\n                col += (d-0.4)*33.0*0.5*(0.0+noise(100.*uv+vec2(-ctime*2., 0.)))*vec3(1.5, 0.5, 0.0);\n            } else {\n                col += tgt;\n            }\n        }\n        background = col;"
+  },
+  "backgroundEffectId": 4,
+  "thumbEffectId": 1
+}
